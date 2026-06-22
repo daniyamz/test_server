@@ -16,7 +16,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404", http.StatusNotFound)
 		return
 	}
-	if r.Method != "GET" {
+	if r.Method != http.MethodGet {
 		http.Error(w, "404", http.StatusNotFound)
 		return
 	}
@@ -25,6 +25,10 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 func EchoPage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/echo" {
 		http.Error(w, "Path not found.", http.StatusNotFound)
+		return
+	}
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	input := r.PostFormValue("text")
