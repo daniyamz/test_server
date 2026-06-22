@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -13,11 +14,13 @@ type EchoRes struct {
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	tmpl, err = template.ParseFiles("templates/index.html")
 	if r.URL.Path != "/" {
-		http.Error(w, "404", http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(`{"Poth Not found"}`))
 		return
 	}
 	if r.Method != http.MethodGet {
-		http.Error(w, "404", http.StatusNotFound)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte(`{"Method not allowed"}`))
 		return
 	}
 	tmpl.Execute(w, "")
@@ -45,5 +48,8 @@ func main() {
 
 	mux.HandleFunc("/", HomePage)
 	mux.HandleFunc("/echo", EchoPage)
-	http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":8080", mux)
+	if err != nil {
+		log.Fatal()
+	}
 }
